@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class Chave : MonoBehaviour
 {
-    [Header("Configuração da Chave")]
-    public GameObject textoInteracao;
-
     private bool playerNaRange = false;
     private PlayerController player;
 
@@ -15,8 +12,6 @@ public class Chave : MonoBehaviour
             if (player != null)
             {
                 player.temChave = true;
-                Debug.Log("Chave coletada!");
-                Destroy(gameObject); // remove a chave da cena
             }
         }
     }
@@ -27,9 +22,6 @@ public class Chave : MonoBehaviour
         {
             playerNaRange = true;
             player = other.GetComponent<PlayerController>();
-
-            if (textoInteracao != null)
-                textoInteracao.SetActive(true);
         }
     }
 
@@ -39,9 +31,6 @@ public class Chave : MonoBehaviour
         {
             playerNaRange = false;
             player = null;
-
-            if (textoInteracao != null)
-                textoInteracao.SetActive(false);
         }
     }
 }

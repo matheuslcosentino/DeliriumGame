@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Câmera")]
     public Transform cameraTransform;
+    public float mouseSensitivity = 2f;
+    private float xRotation = 0f; // Para controlar rotação vertical
 
     [Header("Objeto para Ser Ativado")]
     public GameObject objetoTab;
@@ -16,39 +18,56 @@ public class PlayerController : MonoBehaviour
     public GameObject objDesativ2;
 
     [Header("Inventário")]
-    public bool temChave = false; // será ativado ao pegar a chave
+    public bool temChave = false;
 
     private CharacterController controller;
 
     void Start()
     {
-        Mouse();
         controller = GetComponent<CharacterController>();
 
         if (cameraTransform == null && Camera.main != null)
             cameraTransform = Camera.main.transform;
+
+        Mouse();
     }
 
     void Update()
     {
+        MovePlayer();
+        RotateCamera();
+        HandleTab();
+    }
+
+    void MovePlayer()
+    {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
-
-        forward.y = 0f;
-        right.y = 0f;
-
-        forward.Normalize();
-        right.Normalize();
+        Vector3 forward = transform.forward; // agora usa o transform do player
+        Vector3 right = transform.right;
 
         Vector3 move = (forward * vertical + right * horizontal).normalized;
 
         float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
 
         controller.Move(move * currentSpeed * Time.deltaTime);
+    }
 
+    void RotateCamera()
+    {
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f); // Limita rotação vertical
+
+        cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        transform.Rotate(Vector3.up * mouseX); // Rotação horizontal do player
+    }
+
+    void HandleTab()
+    {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             objetoTab.SetActive(!objetoTab.activeSelf);
